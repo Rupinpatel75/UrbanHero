@@ -1,9 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { Search, Map, MessageSquare, Users } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card"; // Added from original
-import { FileText, ArrowRight } from "lucide-react"; // Added from original
-
+import { Card, CardContent } from "@/components/ui/card";
+import { FileText, ArrowRight } from "lucide-react";
 
 export default function Home() {
   return (
@@ -13,7 +12,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
             <div className="flex items-center">
-              <img src="/logo.svg" alt="SmartCity" className="h-8 w-8" />
+              <img src="/logo.svg" alt="SmartCity" className="h-10 w-10" />
               <span className="ml-2 text-xl font-semibold">SmartCity</span>
             </div>
             <div className="flex items-center space-x-4">

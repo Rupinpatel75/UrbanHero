@@ -44,7 +44,7 @@ export function SidebarNav() {
     <div className="flex flex-col min-h-screen w-64 border-r bg-background">
       <div className="p-6 flex-1">
         <div className="flex items-center mb-8">
-          <img src="/logo.svg" alt="SmartCity" className="h-8 w-8" />
+          <img src="/logo.svg" alt="SmartCity" className="h-10 w-10" />
           <span className="ml-2 text-xl font-semibold">SmartCity</span>
         </div>
 
