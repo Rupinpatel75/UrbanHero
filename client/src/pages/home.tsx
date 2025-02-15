@@ -1,10 +1,27 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { Search, Map, MessageSquare, Users } from "lucide-react";
+import { Search, Map, MessageSquare, Users, Download } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { FileText, ArrowRight } from "lucide-react";
 
 export default function Home() {
+  const handleDownload = async () => {
+    try {
+      const response = await fetch("/api/download");
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "smartcity-project.zip";
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error("Error downloading project:", error);
+    }
+  };
+
   return (
     <div className="min-h-screen">
       {/* Navbar */}
@@ -31,6 +48,10 @@ export default function Home() {
               <Link href="/signup">
                 <Button>Sign up</Button>
               </Link>
+              <Button onClick={handleDownload} variant="outline" className="flex items-center gap-2">
+                <Download className="h-4 w-4" />
+                Download Project
+              </Button>
             </div>
           </div>
         </div>
