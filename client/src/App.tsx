@@ -4,19 +4,19 @@ import { queryClient } from "./lib/queryClient";
 import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
+import Login from "@/pages/login";
 import Dashboard from "@/pages/dashboard";
 import Map from "@/pages/map";
 import Report from "@/pages/report";
 import Rewards from "@/pages/rewards";
 import Cases from "@/pages/cases";
-import Navbar from "@/components/layouts/navbar";
 
 function Router() {
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
       <Switch>
         <Route path="/" component={Home} />
+        <Route path="/login" component={Login} />
         <Route path="/dashboard" component={Dashboard} />
         <Route path="/map" component={Map} />
         <Route path="/report" component={Report} />
