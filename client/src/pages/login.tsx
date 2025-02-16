@@ -3,8 +3,51 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "wouter";
 import { SiGoogle, SiApple, SiFacebook } from "react-icons/si";
+import { useState } from "react";
+import { useLocation } from "wouter";
+
+
 
 export default function Login() {
+  const [location, navigate] = useLocation();
+  // const navigate = useNavigate(); // Hook for redirection
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch("http://localhost:5000/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Login failed");
+      }
+
+      // Store token in localStorage
+      localStorage.setItem("token", data.token);
+
+      // Redirect to dashboard
+      navigate("/dashboard");
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background/50 to-background">
       <Card className="w-full max-w-md mx-4">
@@ -28,12 +71,17 @@ export default function Login() {
             </div>
           </div>
 
-          <form className="space-y-4">
+          {error && <p className="text-red-500 text-center">{error}</p>}
+
+          <form className="space-y-4" onSubmit={handleLogin}>
             <div>
               <Input
                 type="text"
                 placeholder="Username / Email-id"
                 className="w-full"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
               />
             </div>
             <div>
@@ -41,8 +89,12 @@ export default function Login() {
                 type="password"
                 placeholder="Password"
                 className="w-full"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
               />
             </div>
+
             <div className="text-right">
               <Link href="/forgot-password">
                 <a className="text-sm text-gray-600 hover:text-gray-900">

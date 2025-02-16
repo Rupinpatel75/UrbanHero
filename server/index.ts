@@ -1,10 +1,19 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
+import { User } from "./models/User";
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+const JWT_SECRET = "123123";
+
+mongoose
+  .connect("mongodb://localhost:27017/UrbanHero")
+  .then(() => log("MongoDB Connected"))
+  .catch((err) => console.error("MongoDB Connection Error:", err));
 
 app.use((req, res, next) => {
   const start = Date.now();
@@ -34,6 +43,61 @@ app.use((req, res, next) => {
   });
 
   next();
+});
+
+
+app.post("/signup", async (req: Request, res: Response) => {
+  try {
+    const { username, email, password, state, district, city, phone_no } = req.body;
+
+    // Check if user already exists
+    let user = await User.findOne({ email });
+    if (user) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+
+    // Hash the password
+    // const salt = await bcrypt.genSalt(10);
+    // const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Create new user
+    user = new User({ username, email, password, state, district, city, phone_no });
+    await user.save();
+
+    res.status(201).json({ message: "User registered successfully" });
+  } catch (error) {
+    console.error("Registration Error:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+// Login Route
+app.post("/login", async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+
+    // Find user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    // Compare passwords
+    // const isMatch = await bcrypt.compare(password, user.password);
+    // if (!isMatch) {
+    //   return res.status(400).json({ message: "Invalid credentials" });
+    // }
+
+    // Generate JWT Token
+    const token = jwt.sign({ userId: user._id }, JWT_SECRET as string, {
+      expiresIn: "1h",
+    });
+
+    res.json({token});
+  } catch (error) {
+    console.error("Login Error:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
 });
 
 (async () => {

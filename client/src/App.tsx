@@ -11,6 +11,7 @@ import Map from "@/pages/map";
 import Report from "@/pages/report";
 import Rewards from "@/pages/rewards";
 import Cases from "@/pages/cases";
+import Signup from "./pages/signup";
 
 function Router() {
   return (
@@ -46,6 +47,7 @@ function Router() {
             <Cases />
           </AuthLayout>
         </Route>
+        <Route path="/SignUp" component={Signup} />
         <Route component={NotFound} />
       </Switch>
     </div>
