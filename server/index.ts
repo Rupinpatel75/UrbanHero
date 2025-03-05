@@ -11,7 +11,7 @@ app.use(express.urlencoded({ extended: false }));
 const JWT_SECRET = "123123";
 
 mongoose
-  .connect("mongodb://localhost:27017/UrbanHero")
+  .connect("mongodb://localhost:27017/Smartcity_01")
   .then(() => log("MongoDB Connected"))
   .catch((err) => console.error("MongoDB Connection Error:", err));
 

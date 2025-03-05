@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import Navbar_Upper from "@/components/layouts/navbar_upper"; // Import the Navbar component
 import {
   Users,
   FileText,
@@ -47,6 +48,7 @@ export default function Dashboard() {
 
   return (
     <div className="p-6">
+      <Navbar_Upper />
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-semibold">Dashboard</h1>
         <Button variant="outline">Export</Button>

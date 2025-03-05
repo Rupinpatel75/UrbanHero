@@ -3,7 +3,8 @@ import { Link } from "wouter";
 import { Search, Map, MessageSquare, Users } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { FileText, ArrowRight } from "lucide-react";
-
+import logo from "../assets/logo.png";
+import heroillustration from "../assets/hero-illustration.png";
 export default function Home() {
   return (
     <div className="min-h-screen">
@@ -12,7 +13,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
             <div className="flex items-center">
-              <img src="/logo.svg" alt="SmartCity" className="h-10 w-10" />
+              <img src={logo} alt="SmartCity" className="h-10 w-10" />
               <span className="ml-2 text-xl font-semibold">SmartCity</span>
             </div>
             <div className="flex items-center space-x-4">
@@ -60,7 +61,7 @@ export default function Home() {
                 <div className="mt-12 lg:mt-0 lg:w-1/2">
                   <img
                     className="w-full"
-                    src="/hero-illustration.svg"
+                    src={heroillustration}
                     alt="City illustration"
                   />
                 </div>

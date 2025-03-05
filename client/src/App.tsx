@@ -6,12 +6,12 @@ import { AuthLayout } from "@/components/layouts/auth-layout";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import Login from "@/pages/login";
+import SignUp from "@/pages/signup";
 import Dashboard from "@/pages/dashboard";
 import Map from "@/pages/map";
 import Report from "@/pages/report";
 import Rewards from "@/pages/rewards";
 import Cases from "@/pages/cases";
-import Signup from "./pages/signup";
 
 function Router() {
   return (
@@ -20,6 +20,7 @@ function Router() {
         {/* Public routes */}
         <Route path="/" component={Home} />
         <Route path="/login" component={Login} />
+         <Route path="/SignUp" component={SignUp} />
 
         {/* Protected routes with AuthLayout */}
         <Route path="/dashboard">
@@ -47,7 +48,30 @@ function Router() {
             <Cases />
           </AuthLayout>
         </Route>
-        <Route path="/SignUp" component={Signup} />
+        <Route path="/users">
+          <AuthLayout>
+            <div className="h-full p-6">
+              <h1 className="text-2xl font-bold mb-6">Users</h1>
+              <p>Users management page</p>
+            </div>
+          </AuthLayout>
+        </Route>
+        <Route path="/case-report">
+          <AuthLayout>
+            <div className="h-full p-6">
+              <h1 className="text-2xl font-bold mb-6">Case Reports</h1>
+              <p>Case reports and analytics</p>
+            </div>
+          </AuthLayout>
+        </Route>
+        <Route path="/settings">
+          <AuthLayout>
+            <div className="h-full p-6">
+              <h1 className="text-2xl font-bold mb-6">Settings</h1>
+              <p>User and application settings</p>
+            </div>
+          </AuthLayout>
+        </Route>
         <Route component={NotFound} />
       </Switch>
     </div>
