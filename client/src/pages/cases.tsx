@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -13,39 +14,54 @@ import { Badge } from "@/components/ui/badge";
 import { Search, FileDown } from "lucide-react";
 import { type Case } from "@shared/schema";
 
-const mockCases: Case[] = [
-  {
-    id: 1230,
-    title: "Pothole on road",
-    description: "Large pothole causing traffic issues",
-    category: "road",
-    status: "completed",
-    priority: "high",
-    location: "Main Street",
-    latitude: "23.2156",
-    longitude: "72.6369",
-    userId: 1,
-    createdAt: new Date("2022-08-15"),
-  },
-  {
-    id: 1231,
-    title: "Broken street light",
-    description: "Street light not working at night",
-    category: "lighting",
-    status: "completed",
-    priority: "medium",
-    location: "Park Avenue",
-    latitude: "23.2256",
-    longitude: "72.6469",
-    userId: 1,
-    createdAt: new Date("2022-08-07"),
-  },
-];
+// const mockCases: Case[] = [
+//   {
+//     id: 1230,
+//     title: "Pothole on road",
+//     description: "Large pothole causing traffic issues",
+//     category: "road",
+//     status: "completed",
+//     priority: "high",
+//     location: "Main Street",
+//     latitude: "23.2156",
+//     longitude: "72.6369",
+//     userId: 1,
+//     createdAt: new Date("2022-08-15"),
+//   },
+//   {
+//     id: 1231,
+//     title: "Broken street light",
+//     description: "Street light not working at night",
+//     category: "lighting",
+//     status: "completed",
+//     priority: "medium",
+//     location: "Park Avenue",
+//     latitude: "23.2256",
+//     longitude: "72.6469",
+//     userId: 1,
+//     createdAt: new Date("2022-08-07"),
+//   },
+// ];
+
+// export default function Cases() {
+//   const { data: cases = mockCases } = useQuery({
+//     queryKey: ["/api/cases"],
+//   });
+
+const fetchCases = async () => {
+  const response = await axios.get("/api/cases"); // Make API call
+  return response.data; // Return fetched data
+};
 
 export default function Cases() {
-  const { data: cases = mockCases } = useQuery({
+  const { data: cases = [], error, isLoading } = useQuery({
     queryKey: ["/api/cases"],
+    queryFn: fetchCases, // Provide function to fetch data
   });
+
+  if (isLoading) return <p>Loading cases...</p>;
+  if (error) return <p>Error loading cases.</p>;
+
 
   return (
     <div className="p-6">
@@ -82,7 +98,7 @@ export default function Cases() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {cases.map((case_) => (
+            {cases.map((case_: Case) => (
               <TableRow key={case_.id}>
                 <TableCell>#{case_.id}</TableCell>
                 <TableCell>{case_.title}</TableCell>

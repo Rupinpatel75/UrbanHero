@@ -36,6 +36,7 @@ Icon.Default.mergeOptions({
   shadowUrl: '/marker-shadow.png',
 });
 
+// LocationMarker component
 function LocationMarker({ position, setPosition }) {
   useMapEvents({
     click(e) {
@@ -62,7 +63,6 @@ export default function Report() {
       location: "",
       latitude: "",
       longitude: "",
-      imageUrl: "",
       userId: 1, // Mock user ID
     },
   });
@@ -101,9 +101,31 @@ export default function Report() {
     }
   };
 
+  const onSubmit = (formData: any) => {
+    const data = new FormData();
+    data.append("title", formData.title);
+    data.append("description", formData.description);
+    data.append("category", formData.category);
+    data.append("priority", formData.priority);
+    data.append("latitude", formData.latitude);
+    data.append("longitude", formData.longitude);
+    data.append("location", formData.location); // Ensure location is included
+    data.append("userId", String(formData.userId)); // Convert userId to string
+
+    if (selectedFile) {
+      data.append("image", selectedFile); // Append the selected file
+    }
+
+    mutation.mutate(data); // Trigger the mutation
+  };
+
   const mutation = useMutation({
-    mutationFn: async (data: any) => {
-      await apiRequest("POST", "/api/cases", data);
+    mutationFn: async (data: FormData) => {
+      const response = await apiRequest("POST", "/api/cases", data);
+      if (!response.ok) {
+        throw new Error("Failed to submit report");
+      }
+      return response.json();
     },
     onSuccess: () => {
       toast({
@@ -113,6 +135,7 @@ export default function Report() {
       form.reset();
       setSelectedFile(null);
       setFilePreview(null);
+      setPosition(null); // Reset position if needed
     },
     onError: (error) => {
       toast({
@@ -128,7 +151,7 @@ export default function Report() {
       <Card>
         <CardContent className="p-6">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit((data) => mutation.mutate(data))} className="space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-6">
                   {/* Image Upload */}
@@ -148,6 +171,21 @@ export default function Report() {
                       />
                     )}
                   </div>
+
+                  {/* Title Field */}
+                  <FormField
+                    control={form.control}
+                    name="title"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Title</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="Enter title" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
                   {/* Issue Type */}
                   <FormField
@@ -261,6 +299,19 @@ export default function Report() {
                             <FormLabel>Longitude</FormLabel>
                             <FormControl>
                               <Input {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="location"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Location</FormLabel>
+                            <FormControl>
+                              <Input {...field} placeholder="Enter location" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>

@@ -4,11 +4,17 @@ import { setupVite, serveStatic, log } from "./vite";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import { User } from "./models/User";
+import { Report } from "./models/Report";
+import multer from 'multer';
+import cors from 'cors';
+
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 const JWT_SECRET = "123123";
+const upload = multer({ dest: 'uploads/' });
 
 mongoose
   .connect("mongodb://localhost:27017/Smartcity_01")
@@ -99,6 +105,61 @@ app.post("/login", async (req: Request, res: Response) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
+
+app.post("/api/cases", upload.single('image'), async (req, res) => {
+  console.log(req.body); // This should now contain the form fields
+  console.log(req.file); // This should contain the uploaded file info
+  try {
+    const {
+      title,
+      description,
+      category,
+      priority,
+      location,
+      latitude,
+      longitude,
+      userId,
+    } = req.body;
+
+    // Validate required fields
+    if (!title || !description || !category || !latitude || !longitude || !userId) {
+      return res.status(400).json({ message: "All required fields must be provided." });
+    }
+
+    // Create a new report
+    const newReport = new Report({
+      title,
+      description,
+      category,
+      priority,
+      location,
+      latitude,
+      longitude,
+      imageUrl: req.file ? req.file.path : '', // Save the file path if an image was uploaded
+      userId,
+    });
+
+    // Save to database
+    await newReport.save();
+
+    res.status(201).json({ message: "Report submitted successfully", report: newReport });
+  } catch (error) {
+    console.error("Error submitting report:", error);
+    res.status(500).json({ message: "Server error, please try again later" });
+  }
+});
+
+
+app.get("/api/cases", async (req, res) => {
+  try {
+    const cases = await Report.find(); // Fetch from MongoDB
+    res.json(cases);
+  } catch (error) {
+    res.status(500).json({ error: "Error fetching cases" });
+  }
+});
+
 
 (async () => {
   const server = await registerRoutes(app);
