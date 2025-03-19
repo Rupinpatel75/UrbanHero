@@ -1,4 +1,3 @@
-
 import { Link } from "wouter";
 import logo from '../../assets/logo.png';// Corrected path
 import { Button } from "@/components/ui/button";
@@ -31,15 +30,16 @@ export function Header() {
             </div>
           </Link>
         </div>
-        <nav className="flex items-center gap-4 md:gap-6">
+        
+        <nav className="flex items-center gap-4">
           <Link href="/dashboard">
-            <a className="text-sm font-medium transition-colors hover:text-primary">Dashboard</a>
+            <span className="text-sm font-medium transition-colors hover:text-primary">Dashboard</span>
           </Link>
           <Link href="/map">
-            <a className="text-sm font-medium transition-colors hover:text-primary">Map</a>
+            <span className="text-sm font-medium transition-colors hover:text-primary">Map</span>
           </Link>
           <Link href="/report">
-            <a className="text-sm font-medium transition-colors hover:text-primary">Create a report</a>
+            <span className="text-sm font-medium transition-colors hover:text-primary">Create a report</span>
           </Link>
           <Button variant="ghost" size="icon" className="relative">
             <Bell className="h-5 w-5" />

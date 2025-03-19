@@ -1,49 +1,17 @@
 import mongoose from "mongoose";
 
-const ReportSchema = new mongoose.Schema(
-  {
-    title: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    description: {
-      type: String,
-      required: true,
-    },
-    category: {
-      type: String,
-      enum: ["road", "lighting", "garbage", "other"],
-      required: true,
-    },
-    priority: {
-      type: String,
-      enum: ["low", "medium", "high"],
-      default: "low",
-    },
-    location: {
-      type: String,
-      trim: true,
-    },
-    latitude: {
-      type: Number,
-      required: true,
-    },
-    longitude: {
-      type: Number,
-      required: true,
-    },
-    imageUrl: {
-      type: String,
-      trim: true,
-    },
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-  },
-  { timestamps: true }
-);
+const reportSchema = new mongoose.Schema({
+  title: String,
+  description: String,
+  category: String,
+  priority: String,
+  latitude: String,
+  longitude: String,
+  imageUrl: String,
+  userId: Number,
+  createdAt: { type: Date, default: Date.now },
+});
 
-export const Report = mongoose.model("Report", ReportSchema);
+const Report = mongoose.model("Report", reportSchema);
+
+export default Report;
