@@ -12,6 +12,7 @@ import Map from "@/pages/map";
 import Report from "@/pages/report";
 import Rewards from "@/pages/rewards";
 import Cases from "@/pages/cases";
+import Settings from "@/pages/settings";
 
 function Router() {
   return (
@@ -46,6 +47,11 @@ function Router() {
         <Route path="/cases">
           <AuthLayout>
             <Cases />
+          </AuthLayout>
+        </Route>
+        <Route path="/settings">
+          <AuthLayout>
+            <Settings />
           </AuthLayout>
         </Route>
         <Route path="/users">

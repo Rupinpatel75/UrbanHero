@@ -37,6 +37,7 @@ Icon.Default.mergeOptions({
 });
 
 // LocationMarker component
+//@ts-ignore
 function LocationMarker({ position, setPosition }) {
   useMapEvents({
     click(e) {
@@ -54,18 +55,17 @@ export default function Report() {
   const [position, setPosition] = useState<[number, number] | null>(null);
 
   const form = useForm({
-    resolver: zodResolver(insertCaseSchema),
     defaultValues: {
       title: "",
       description: "",
-      category: "",
-      priority: "low",
+      category: "road",  // Set a default category
+      priority: "low",   // Set a default priority
       location: "",
       latitude: "",
       longitude: "",
-      userId: 1, // Mock user ID
     },
   });
+  
 
   // Get user's current location
   useEffect(() => {
@@ -102,6 +102,21 @@ export default function Report() {
   };
 
   const onSubmit = (formData: any) => {
+    console.log("Validating form data...");
+    console.log("Form Data:", formData); // Debugging
+  
+    const errors = form.formState.errors;
+    console.log("Validation Errors:", errors); // Debugging
+  
+    if (Object.keys(errors).length > 0) {
+      toast({
+        title: "Error",
+        description: "Please fix form errors before submitting.",
+        variant: "destructive",
+      });
+      return;
+    }
+  
     const data = new FormData();
     data.append("title", formData.title);
     data.append("description", formData.description);
@@ -109,22 +124,30 @@ export default function Report() {
     data.append("priority", formData.priority);
     data.append("latitude", formData.latitude);
     data.append("longitude", formData.longitude);
-    data.append("location", formData.location); // Ensure location is included
-    data.append("userId", String(formData.userId)); // Convert userId to string
-
+    data.append("location", formData.location);
+  
     if (selectedFile) {
-      data.append("image", selectedFile); // Append the selected file
+      data.append("image", selectedFile);
     }
-
-    mutation.mutate(data); // Trigger the mutation
+  
+    console.log("Submitting Form Data:", data); // Debugging
+  
+    mutation.mutate(data);
   };
-
+  
+  
   const mutation = useMutation({
     mutationFn: async (data: FormData) => {
-      const response = await apiRequest("POST", "/api/cases", data);
+      console.log("Sending data to API:", data); // Debugging
+  
+      const response = await apiRequest("POST", "/api/v1/cases", data);
+  
+      console.log("Response from API:", response); // Debugging
+  
       if (!response.ok) {
         throw new Error("Failed to submit report");
       }
+      
       return response.json();
     },
     onSuccess: () => {
@@ -132,12 +155,14 @@ export default function Report() {
         title: "Success",
         description: "Your report has been submitted successfully.",
       });
+      console.log("Mutation Success"); // Debugging
       form.reset();
       setSelectedFile(null);
       setFilePreview(null);
-      setPosition(null); // Reset position if needed
+      setPosition(null);
     },
     onError: (error) => {
+      console.error("Mutation Error:", error); // Debugging
       toast({
         title: "Error",
         description: error.message,
@@ -145,13 +170,20 @@ export default function Report() {
       });
     },
   });
-
+  
+  
   return (
     <div className="p-6 max-w-5xl mx-auto">
       <Card>
         <CardContent className="p-6">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form
+                onSubmit={(event) => {
+                  console.log("Form submit triggered"); // Debugging
+                  form.handleSubmit(onSubmit)(event);
+                }}
+                className="space-y-6"
+              >
               <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-6">
                   {/* Image Upload */}
