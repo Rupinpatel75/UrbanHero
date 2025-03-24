@@ -1,8 +1,11 @@
 import { users, type User, type InsertUser } from "@shared/schema";
-
+import { MongoClient, ObjectId } from 'mongodb';
+import type { InsertCase, Case } from '@shared/schema';
 // modify the interface with any CRUD methods
 // you might need
-
+const uri = process.env.MONGODB_URI || "mongodb://localhost:27017";
+const client = new MongoClient(uri);
+const dbName = "infrastructure_reports";
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;

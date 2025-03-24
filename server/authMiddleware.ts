@@ -10,8 +10,9 @@ export interface AuthRequest extends Request{
 }
 
 export const authenticateUser = (req: AuthRequest, res:Response, next:NextFunction) => {
-    const token = req.header("Authorization")?.split(" ")[1];
-
+        console.log(req.header);
+        const token = req.header("Authorization")?.split(" ")[1];
+        console.log(token,"debug");
     if(!token) {
         return res.status(401).json({
             message: "Access Denied, No token provided"

@@ -10,11 +10,20 @@ async function throwIfResNotOk(res: Response) {
 export async function apiRequest(
   method: string,
   url: string,
-  data?: unknown | undefined,
+  data?: unknown | undefined
 ): Promise<Response> {
+  const token = localStorage.getItem("token"); // Get token from localStorage
+
+  const headers: HeadersInit = {
+    ...(data ? { "Content-Type": "application/json" } : {}), // Add Content-Type if data exists
+    ...(token ? { Authorization: `Bearer ${token}` } : {}), // Add Authorization header if token exists
+  };
+
+  console.log("API Request Headers:", headers); // Debugging step
+
   const res = await fetch(url, {
     method,
-    headers: data ? { "Content-Type": "application/json" } : {},
+    headers,
     body: data ? JSON.stringify(data) : undefined,
     credentials: "include",
   });

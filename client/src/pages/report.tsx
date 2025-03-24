@@ -36,7 +36,6 @@ Icon.Default.mergeOptions({
   shadowUrl: '/marker-shadow.png',
 });
 
-// LocationMarker component
 //@ts-ignore
 function LocationMarker({ position, setPosition }) {
   useMapEvents({
@@ -58,8 +57,8 @@ export default function Report() {
     defaultValues: {
       title: "",
       description: "",
-      category: "road",  // Set a default category
-      priority: "low",   // Set a default priority
+      category: "",  // Set a default category
+      priority: "",   // Set a default priority
       location: "",
       latitude: "",
       longitude: "",
@@ -159,7 +158,6 @@ export default function Report() {
       form.reset();
       setSelectedFile(null);
       setFilePreview(null);
-      setPosition(null);
     },
     onError: (error) => {
       console.error("Mutation Error:", error); // Debugging
@@ -177,13 +175,7 @@ export default function Report() {
       <Card>
         <CardContent className="p-6">
           <Form {...form}>
-          <form
-                onSubmit={(event) => {
-                  console.log("Form submit triggered"); // Debugging
-                  form.handleSubmit(onSubmit)(event);
-                }}
-                className="space-y-6"
-              >
+            <form onSubmit={form.handleSubmit((data) => mutation.mutate(data))} className="space-y-6">
               <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-6">
                   {/* Image Upload */}
@@ -203,9 +195,8 @@ export default function Report() {
                       />
                     )}
                   </div>
-
-                  {/* Title Field */}
-                  <FormField
+           {/* Title Field */}
+              <FormField
                     control={form.control}
                     name="title"
                     render={({ field }) => (
@@ -218,7 +209,6 @@ export default function Report() {
                       </FormItem>
                     )}
                   />
-
                   {/* Issue Type */}
                   <FormField
                     control={form.control}
@@ -331,19 +321,6 @@ export default function Report() {
                             <FormLabel>Longitude</FormLabel>
                             <FormControl>
                               <Input {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="location"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Location</FormLabel>
-                            <FormControl>
-                              <Input {...field} placeholder="Enter location" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
