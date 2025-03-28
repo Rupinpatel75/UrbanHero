@@ -37,6 +37,10 @@ export class MemStorage implements IStorage {
     this.users.set(id, user);
     return user;
   }
+
+  async getUserById(id: number): Promise<User | undefined> {
+    return this.users.get(id);
+  }
 }
 
 export const storage = new MemStorage();

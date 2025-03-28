@@ -9,8 +9,12 @@ import {
   Award,
   Settings,
   LogOut,
+  FileText,
 } from "lucide-react";
 
+interface SidebarProps {
+  isAdmin?: boolean;
+}
 const navItems = [
   {
     title: "Dashboard",

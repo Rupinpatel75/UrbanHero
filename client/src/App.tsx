@@ -13,6 +13,12 @@ import Report from "@/pages/report";
 import Rewards from "@/pages/rewards";
 import Cases from "@/pages/cases";
 import Settings from "@/pages/settings";
+import AdminDashboard from "@/pages/admin/dashboard";
+import { AdminLayout } from "@/components/layouts/admin-layout";
+import ViewEmployees from "@/pages/admin/employees";
+import AddEmployee from "@/pages/admin/add-employee";
+import AssignTask from "@/pages/admin/assign-task"; // Import the AssignTask component
+import Complani from "@/pages/admin/mange-complani";
 
 function Router() {
   return (
@@ -22,7 +28,11 @@ function Router() {
         <Route path="/" component={Home} />
         <Route path="/login" component={Login} />
          <Route path="/SignUp" component={SignUp} />
-
+         <Route path="/admin/dashboard" component={AdminDashboard} />
+         <Route path="/admin/employees" component={ViewEmployees} />
+         <Route path="/admin/add-employee" component={AddEmployee} />
+         <Route path="/admin/mange-complani" component={Complani} />
+         <Route path="/admin/assign-task" component={AssignTask} /> {/* Added route */}
         {/* Protected routes with AuthLayout */}
         <Route path="/dashboard">
           <AuthLayout>
@@ -53,6 +63,29 @@ function Router() {
           <AuthLayout>
             <Settings />
           </AuthLayout>
+        </Route>
+          
+        {/* Admin Routes */}
+        <Route path="/admin/dashboard">
+          <AdminLayout>
+            <AdminDashboard />
+          </AdminLayout>
+        </Route>
+        <Route path="/admin/users">
+          <AdminLayout>
+            <div className="h-full p-6">
+              <h1 className="text-2xl font-bold mb-6">Users Management</h1>
+              <p>Manage system users here</p>
+            </div>
+          </AdminLayout>
+        </Route>
+        <Route path="/admin/reports">
+          <AdminLayout>
+            <div className="h-full p-6">
+              <h1 className="text-2xl font-bold mb-6">Reports Management</h1>
+              <p>Manage user reports here</p>
+            </div>
+          </AdminLayout>
         </Route>
         <Route path="/users">
           <AuthLayout>
