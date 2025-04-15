@@ -7,6 +7,7 @@ export const users = pgTable("users", {
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
   points: integer("points").default(0),
+  isAdmin: boolean("is_admin").default(false),
 });
 
 export const cases = pgTable("cases", {
@@ -35,6 +36,8 @@ export const insertCaseSchema = createInsertSchema(cases).omit({
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
-export type User = typeof users.$inferSelect;
+export type User = typeof users.$inferSelect & {
+isAdmin?: boolean;
+};
 export type Case = typeof cases.$inferSelect;
 export type InsertCase = z.infer<typeof insertCaseSchema>;

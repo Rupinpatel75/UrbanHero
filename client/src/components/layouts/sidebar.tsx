@@ -1,4 +1,3 @@
-
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import {
@@ -9,7 +8,20 @@ import {
   Award,
   Settings,
   LogOut,
+  FileText,
 } from "lucide-react";
+import { useSidebar } from "@/components/ui/sidebar";
+
+interface SidebarProps {
+  isAdmin?: boolean;
+}
+
+const adminNavItems = [
+  { href: "/admin/dashboard", title: "Admin Dashboard", icon: LayoutDashboard },
+  { href: "/admin/users", title: "Users", icon: Users },
+  { href: "/admin/reports", title: "Reports", icon: FileText },
+  { href: "/admin/settings", title: "Settings", icon: Settings },
+];
 
 const navItems = [
   {
@@ -44,18 +56,36 @@ const navItems = [
   },
 ];
 
-export function Sidebar() {
+export function Sidebar({ isAdmin }: SidebarProps) {
   const [location] = useLocation();
+  const { openMobile, setOpenMobile, toggleSidebar } = useSidebar();
+
+  // Close sidebar when clicking outside on mobile
+  const handleOverlayClick = () => {
+    setOpenMobile(false);
+  };
 
   return (
-    <aside className="w-64 min-h-screen border-r bg-background hidden md:block">
+    <>
+      {/* Overlay for mobile */}
+      {openMobile && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          onClick={handleOverlayClick}
+        />
+      )}
+      <aside className={cn(
+      "fixed inset-y-0 left-0 z-[100] w-64 border-r bg-background transform transition-transform duration-200 ease-in-out md:relative md:translate-x-0",
+      openMobile ? "translate-x-0" : "-translate-x-full",
+      "block" // Always show the container
+    )}>
       <div className="flex flex-col h-full">
         <div className="flex-1 py-4">
           <nav className="grid items-start px-4 gap-2">
-            {navItems.map((item, index) => {
+            {(isAdmin ? adminNavItems : navItems).map((item, index) => {
               const isActive = location === item.href;
               const IconComponent = item.icon;
-              
+
               return (
                 <Link href={item.href} key={index}>
                   <a
@@ -84,5 +114,6 @@ export function Sidebar() {
         </div>
       </div>
     </aside>
+    </>
   );
 }

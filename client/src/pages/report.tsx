@@ -28,12 +28,11 @@ import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { Icon } from "leaflet";
 
-// Fix for default marker icon in react-leaflet
 delete (Icon.Default.prototype as any)._getIconUrl;
 Icon.Default.mergeOptions({
-  iconRetinaUrl: '/marker-icon-2x.png',
-  iconUrl: '/marker-icon.png',
-  shadowUrl: '/marker-shadow.png',
+  iconRetinaUrl: "/marker-icon-2x.png",
+  iconUrl: "/marker-icon.png",
+  shadowUrl: "/marker-shadow.png",
 });
 
 function LocationMarker({ position, setPosition }) {
@@ -53,21 +52,17 @@ export default function Report() {
   const [position, setPosition] = useState<[number, number] | null>(null);
 
   const form = useForm({
-    resolver: zodResolver(insertCaseSchema),
     defaultValues: {
       title: "",
       description: "",
       category: "",
-      priority: "low",
+      priority: "",
       location: "",
       latitude: "",
       longitude: "",
-      imageUrl: "",
-      userId: 1, // Mock user ID
     },
   });
 
-  // Get user's current location
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -83,12 +78,11 @@ export default function Report() {
             description: "Could not get your current location. Please enter manually.",
             variant: "destructive",
           });
-        }
+        },
       );
     }
   }, []);
 
-  // Handle file selection
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -102,8 +96,12 @@ export default function Report() {
   };
 
   const mutation = useMutation({
-    mutationFn: async (data: any) => {
-      await apiRequest("POST", "/api/cases", data);
+    mutationFn: async (data: FormData) => {
+      const response = await apiRequest("POST", "/api/v1/cases", data);
+      if (!response.ok) {
+        throw new Error("Failed to submit report");
+      }
+      return response.json();
     },
     onSuccess: () => {
       toast({
@@ -123,15 +121,31 @@ export default function Report() {
     },
   });
 
+  const onSubmit = (formData: any) => {
+    const data = new FormData();
+    data.append("title", formData.title);
+    data.append("description", formData.description);
+    data.append("category", formData.category);
+    data.append("priority", formData.priority);
+    data.append("latitude", formData.latitude);
+    data.append("longitude", formData.longitude);
+    data.append("location", formData.location);
+
+    if (selectedFile) {
+      data.append("image", selectedFile);
+    }
+
+    mutation.mutate(data);
+  };
+
   return (
-    <div className="p-6 max-w-5xl mx-auto">
+    <div className="p-4 md:p-6 max-w-7xl mx-auto">
       <Card>
         <CardContent className="p-6">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit((data) => mutation.mutate(data))} className="space-y-6">
-              <div className="grid grid-cols-2 gap-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="space-y-6">
-                  {/* Image Upload */}
                   <div className="border rounded-lg p-4">
                     <p className="mb-2 text-sm font-medium">Capture Image</p>
                     <Input
@@ -148,8 +162,7 @@ export default function Report() {
                       />
                     )}
                   </div>
-           {/* Title Field */}
-              <FormField
+                  <FormField
                     control={form.control}
                     name="title"
                     render={({ field }) => (
@@ -162,7 +175,6 @@ export default function Report() {
                       </FormItem>
                     )}
                   />
-                  {/* Issue Type */}
                   <FormField
                     control={form.control}
                     name="category"
@@ -186,8 +198,6 @@ export default function Report() {
                       </FormItem>
                     )}
                   />
-
-                  {/* Severity */}
                   <FormField
                     control={form.control}
                     name="priority"
@@ -210,8 +220,6 @@ export default function Report() {
                       </FormItem>
                     )}
                   />
-
-                  {/* Description */}
                   <FormField
                     control={form.control}
                     name="description"
@@ -219,7 +227,7 @@ export default function Report() {
                       <FormItem>
                         <FormLabel>Description</FormLabel>
                         <FormControl>
-                          <Textarea 
+                          <Textarea
                             placeholder="Describe the issue..."
                             className="min-h-[100px]"
                             {...field}
@@ -230,12 +238,10 @@ export default function Report() {
                     )}
                   />
                 </div>
-
                 <div className="space-y-6">
-                  {/* Location Map */}
                   <div className="border rounded-lg p-4">
                     <p className="mb-2 text-sm font-medium">Location</p>
-                    <div className="h-[300px] rounded-lg overflow-hidden mb-4">
+                    <div className="h-[200px] md:h-[300px] rounded-lg overflow-hidden mb-4">
                       {typeof window !== "undefined" && (
                         <MapContainer
                           center={position || [23.2156, 72.6369]}
@@ -250,8 +256,6 @@ export default function Report() {
                         </MapContainer>
                       )}
                     </div>
-
-                    {/* Coordinates */}
                     <div className="grid grid-cols-2 gap-4">
                       <FormField
                         control={form.control}
@@ -283,7 +287,6 @@ export default function Report() {
                   </div>
                 </div>
               </div>
-
               <Button type="submit" className="w-full" disabled={mutation.isPending}>
                 {mutation.isPending ? "Submitting..." : "Submit Report"}
               </Button>

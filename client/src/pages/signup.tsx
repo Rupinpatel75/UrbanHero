@@ -49,7 +49,7 @@ export default function Signup() {
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:5000/signup", {
+      const response = await fetch("http://localhost:5000/api/v1/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -59,7 +59,7 @@ export default function Signup() {
           state,
           district,
           city,
-          phone_no:phone,
+          phone_no:Number(phone),
         }),
       });
 
@@ -173,7 +173,7 @@ export default function Signup() {
               <Label>Phone Number</Label>
               <div className="flex gap-2">
                 <Input
-                  type="tel"
+                  type="number"
                   placeholder="Phone number"
                   className="w-full"
                   value={phone}

@@ -5,38 +5,45 @@ import { Card, CardContent } from "@/components/ui/card";
 import { FileText, ArrowRight } from "lucide-react";
 import logo from "../assets/logo.png";
 import heroillustration from "../assets/hero-illustration.png";
-export default function Home() {
+
+// New responsive navbar component
+function HomeNavbar() {
   return (
-    <div className="min-h-screen">
-      {/* Navbar */}
-      <nav className="border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            <div className="flex items-center">
-              <img src={logo} alt="SmartCity" className="h-10 w-10" />
-              <span className="ml-2 text-xl font-semibold">SmartCity</span>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Link href="/dashboard">
-                <a className="text-sm text-gray-600 hover:text-gray-900">Dashboard</a>
-              </Link>
-              <Link href="/map">
-                <a className="text-sm text-gray-600 hover:text-gray-900">Map</a>
-              </Link>
-              <Link href="/report">
-                <a className="text-sm text-gray-600 hover:text-gray-900">Create a report</a>
-              </Link>
-              <Link href="/login">
-                <Button variant="outline">Log in</Button>
-              </Link>
-              <Link href="/signup">
-                <Button>Sign up</Button>
-              </Link>
-            </div>
+    <nav className="bg-white shadow">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+          <div className="flex items-center">
+            <img src={logo} alt="SmartCity" className="h-8 w-auto" />
+            {/* <span className="ml-2 text-xl font-semibold">SmartCity</span> */}
+          </div>
+          <div className="flex items-center space-x-4">
+            <Link href="/dashboard">
+              <a className="text-gray-600 hover:text-gray-900">Dashboard</a>
+            </Link>
+            <Link href="/map">
+              <a className="text-gray-600 hover:text-gray-900">Map</a>
+            </Link>
+            <Link href="/report">
+              <a className="text-gray-600 hover:text-gray-900">Create a report</a>
+            </Link>
+            <Link href="/login">
+              <a className="text-gray-600 hover:text-gray-900">Log in</a>
+            </Link>
+            <Link href="/signup">
+              <Button size="sm">Sign up</Button>
+            </Link>
           </div>
         </div>
-      </nav>
+      </div>
+    </nav>
+  );
+}
 
+
+export default function Home() {
+  return (
+    <div className="min-h-screen bg-background">
+      <HomeNavbar />
       {/* Hero Section */}
       <div className="relative overflow-hidden">
         <div className="max-w-7xl mx-auto">

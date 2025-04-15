@@ -22,7 +22,7 @@ export default function Login() {
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:5000/login", {
+      const response = await fetch("http://localhost:5000/api/v1/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -38,6 +38,7 @@ export default function Login() {
 
       // Store token in localStorage
       localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user)); // Store user details
 
       // Redirect to dashboard
       navigate("/dashboard");
@@ -128,8 +129,8 @@ export default function Login() {
 
           <div className="mt-6 text-center text-sm">
             <span className="text-gray-600">Don't have an account? </span>
-            <Link href="/register">
-              <a className="text-primary hover:underline">Register</a>
+            <Link href="/signup">
+              <a className="text-primary hover:underline">Signup</a>
             </Link>
           </div>
         </CardContent>

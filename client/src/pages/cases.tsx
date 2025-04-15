@@ -13,55 +13,29 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Search, FileDown } from "lucide-react";
 import { type Case } from "@shared/schema";
-
-// const mockCases: Case[] = [
-//   {
-//     id: 1230,
-//     title: "Pothole on road",
-//     description: "Large pothole causing traffic issues",
-//     category: "road",
-//     status: "completed",
-//     priority: "high",
-//     location: "Main Street",
-//     latitude: "23.2156",
-//     longitude: "72.6369",
-//     userId: 1,
-//     createdAt: new Date("2022-08-15"),
-//   },
-//   {
-//     id: 1231,
-//     title: "Broken street light",
-//     description: "Street light not working at night",
-//     category: "lighting",
-//     status: "completed",
-//     priority: "medium",
-//     location: "Park Avenue",
-//     latitude: "23.2256",
-//     longitude: "72.6469",
-//     userId: 1,
-//     createdAt: new Date("2022-08-07"),
-//   },
-// ];
-
-// export default function Cases() {
-//   const { data: cases = mockCases } = useQuery({
-//     queryKey: ["/api/cases"],
-//   });
+import * as XLSX from "xlsx"; // Import SheetJS
 
 const fetchCases = async () => {
-  const response = await axios.get("/api/cases"); // Make API call
-  return response.data; // Return fetched data
+  const response = await axios.get("/api/v1/cases"); // Fetch data from API
+  return response.data;
 };
 
 export default function Cases() {
   const { data: cases = [], error, isLoading } = useQuery({
-    queryKey: ["/api/cases"],
-    queryFn: fetchCases, // Provide function to fetch data
+    queryKey: ["/api/v1/cases"],
+    queryFn: fetchCases,
   });
 
   if (isLoading) return <p>Loading cases...</p>;
   if (error) return <p>Error loading cases.</p>;
 
+  // Function to Export Data to Excel
+  const handleExport = () => {
+    const worksheet = XLSX.utils.json_to_sheet(cases); // Convert data to sheet
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Cases"); // Add sheet to workbook
+    XLSX.writeFile(workbook, "cases.xlsx"); // Download the file
+  };
 
   return (
     <div className="p-6">
@@ -77,7 +51,7 @@ export default function Cases() {
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input placeholder="Search issues..." className="pl-8" />
           </div>
-          <Button variant="outline">
+          <Button variant="outline" onClick={handleExport}>
             <FileDown className="mr-2 h-4 w-4" />
             Export to Excel
           </Button>
@@ -100,10 +74,10 @@ export default function Cases() {
           <TableBody>
             {cases.map((case_: Case) => (
               <TableRow key={case_.id}>
-                <TableCell>#{case_.id}</TableCell>
+                <TableCell>{cases.indexOf(case_) + 1}</TableCell>
                 <TableCell>{case_.title}</TableCell>
                 <TableCell>
-                  {new Date(case_.createdAt).toLocaleDateString()}
+                  {new Date(case_.createdAt || "").toLocaleDateString()}
                 </TableCell>
                 <TableCell>
                   <Badge
@@ -118,7 +92,7 @@ export default function Cases() {
                       case_.priority === "high"
                         ? "destructive"
                         : case_.priority === "medium"
-                        ? "warning"
+                        ? "secondary"
                         : "default"
                     }
                   >
