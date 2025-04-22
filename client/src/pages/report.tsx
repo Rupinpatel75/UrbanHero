@@ -171,118 +171,127 @@ export default function Report() {
   
   
   return (
-    <div className="p-6 max-w-5xl mx-auto">
+    <div className="p-4 sm:p-6 max-w-5xl mx-auto">
       <Card>
-        <CardContent className="p-6">
+        <CardContent className="p-4 sm:p-6">
           <Form {...form}>
             <form onSubmit={form.handleSubmit((data) => mutation.mutate(data))} className="space-y-6">
-              <div className="grid grid-cols-2 gap-6">
+              {/* Make the grid responsive */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="space-y-6">
-                  {/* Image Upload */}
+                  {/* Image Upload - More responsive styling */}
                   <div className="border rounded-lg p-4">
                     <p className="mb-2 text-sm font-medium">Capture Image</p>
                     <Input
                       type="file"
                       accept="image/*"
                       onChange={handleFileSelect}
-                      className="mb-2"
+                      className="mb-2 w-full"
                     />
                     {filePreview && (
-                      <img
-                        src={filePreview}
-                        alt="Preview"
-                        className="w-full h-40 object-cover rounded"
-                      />
+                      <div className="relative w-full aspect-video">
+                        <img
+                          src={filePreview}
+                          alt="Preview"
+                          className="w-full h-full object-cover rounded absolute inset-0"
+                        />
+                      </div>
                     )}
                   </div>
-           {/* Title Field */}
-              <FormField
-                    control={form.control}
-                    name="title"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Title</FormLabel>
-                        <FormControl>
-                          <Input {...field} placeholder="Enter title" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  {/* Issue Type */}
-                  <FormField
-                    control={form.control}
-                    name="category"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Type of Issue</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select an issue" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="road">Road Issues</SelectItem>
-                            <SelectItem value="lighting">Street Lighting</SelectItem>
-                            <SelectItem value="garbage">Garbage Collection</SelectItem>
-                            <SelectItem value="other">Other</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
 
-                  {/* Severity */}
-                  <FormField
-                    control={form.control}
-                    name="priority"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Severity</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  {/* Form Fields - Add responsive spacing */}
+                  <div className="space-y-4 sm:space-y-6">
+                    {/* Title Field */}
+                    <FormField
+                      control={form.control}
+                      name="title"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm sm:text-base">Title</FormLabel>
                           <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select severity" />
-                            </SelectTrigger>
+                            <Input {...field} placeholder="Enter title" className="w-full" />
                           </FormControl>
-                          <SelectContent>
-                            <SelectItem value="low">Low</SelectItem>
-                            <SelectItem value="medium">Medium</SelectItem>
-                            <SelectItem value="high">High</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  {/* Description */}
-                  <FormField
-                    control={form.control}
-                    name="description"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Description</FormLabel>
-                        <FormControl>
-                          <Textarea 
-                            placeholder="Describe the issue..."
-                            className="min-h-[100px]"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    {/* Issue Type - Improved mobile styling */}
+                    <FormField
+                      control={form.control}
+                      name="category"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm sm:text-base">Type of Issue</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select an issue" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="w-full">
+                              <SelectItem value="road">Road Issues</SelectItem>
+                              <SelectItem value="lighting">Street Lighting</SelectItem>
+                              <SelectItem value="garbage">Garbage Collection</SelectItem>
+                              <SelectItem value="other">Other</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Severity - Improved mobile styling */}
+                    <FormField
+                      control={form.control}
+                      name="priority"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm sm:text-base">Severity</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select severity" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="low">Low</SelectItem>
+                              <SelectItem value="medium">Medium</SelectItem>
+                              <SelectItem value="high">High</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Description - Responsive textarea */}
+                    <FormField
+                      control={form.control}
+                      name="description"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm sm:text-base">Description</FormLabel>
+                          <FormControl>
+                            <Textarea 
+                              placeholder="Describe the issue..."
+                              className="min-h-[100px] sm:min-h-[150px] w-full"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                 </div>
 
+                {/* Map Section */}
                 <div className="space-y-6">
-                  {/* Location Map */}
                   <div className="border rounded-lg p-4">
-                    <p className="mb-2 text-sm font-medium">Location</p>
-                    <div className="h-[300px] rounded-lg overflow-hidden mb-4">
+                    <p className="mb-2 text-sm font-medium sm:text-base">Location</p>
+                    {/* Responsive map container */}
+                    <div className="h-[250px] sm:h-[300px] md:h-[400px] rounded-lg overflow-hidden mb-4">
                       {typeof window !== "undefined" && (
                         <MapContainer
                           center={position || [23.2156, 72.6369]}
@@ -298,16 +307,16 @@ export default function Report() {
                       )}
                     </div>
 
-                    {/* Coordinates */}
-                    <div className="grid grid-cols-2 gap-4">
+                    {/* Coordinates - Responsive grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <FormField
                         control={form.control}
                         name="latitude"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Latitude</FormLabel>
+                            <FormLabel className="text-sm sm:text-base">Latitude</FormLabel>
                             <FormControl>
-                              <Input {...field} />
+                              <Input {...field} className="w-full" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -318,9 +327,9 @@ export default function Report() {
                         name="longitude"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Longitude</FormLabel>
+                            <FormLabel className="text-sm sm:text-base">Longitude</FormLabel>
                             <FormControl>
-                              <Input {...field} />
+                              <Input {...field} className="w-full" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -331,7 +340,12 @@ export default function Report() {
                 </div>
               </div>
 
-              <Button type="submit" className="w-full" disabled={mutation.isPending}>
+              {/* Submit Button - Responsive styling */}
+              <Button 
+                type="submit" 
+                className="w-full sm:w-auto sm:min-w-[200px] mx-auto block"
+                disabled={mutation.isPending}
+              >
                 {mutation.isPending ? "Submitting..." : "Submit Report"}
               </Button>
             </form>

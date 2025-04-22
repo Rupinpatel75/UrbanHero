@@ -37,6 +37,10 @@ export function Header() {
     navigate("/login");
   };
 
+  const handleSettings = () => {
+    navigate("/settings");
+  };
+
   return (
     <header className="border-b">
       <div className="flex h-16 items-center justify-between px-4 md:px-6">
@@ -85,7 +89,7 @@ export function Header() {
               {isAuthenticated ? (
                 <>
                   <DropdownMenuItem>Profile</DropdownMenuItem>
-                  <DropdownMenuItem>Settings</DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleSettings}>Settings</DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout}>Log out</DropdownMenuItem>
                 </>

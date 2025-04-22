@@ -33,5 +33,8 @@ export default defineConfig({
         ws: true,
       },
     },
+    ws: {
+      port: 5000
+    }
   },
 });
