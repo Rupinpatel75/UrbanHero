@@ -3,7 +3,7 @@ import { Link } from "wouter";
 import logo from "../../assets/logo.png"; 
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Bell } from "lucide-react";
+import { Bell, Menu } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,19 +13,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { navigate } from "wouter/use-browser-location";
+import { useSidebar } from "@/components/ui/sidebar";
 
 export function Header() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<{ name: string; image: string } | null>(null);
+  const { setOpenMobile } = useSidebar();
 
   useEffect(() => {
-    // Check if user is logged in
     const token = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
 
     if (token && storedUser) {
       setIsAuthenticated(true);
-      setUser(JSON.parse(storedUser)); // Parse and set user info
+      setUser(JSON.parse(storedUser));
     }
   }, []);
 
@@ -38,9 +39,19 @@ export function Header() {
   };
 
   return (
-    <header className="border-b">
+    <header className="bg-white text-black border-b">
       <div className="flex h-16 items-center justify-between px-4 md:px-6">
         <div className="flex items-center gap-4">
+          {/* Hamburger menu button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            onClick={() => setOpenMobile(true)}
+          >
+            <Menu className="h-6 w-6" />
+          </Button>
+
           <Link href="/">
             <div className="flex items-center gap-2">
               <img src={logo} alt="SmartCity" className="h-10 w-10" />
@@ -48,19 +59,12 @@ export function Header() {
             </div>
           </Link>
         </div>
+
         <nav className="flex items-center gap-4 md:gap-6">
           {isAuthenticated && (
-            <>
-              <Link href="/dashboard">
-                <a className="text-sm font-medium transition-colors hover:text-primary">Dashboard</a>
-              </Link>
-              <Link href="/map">
-                <a className="text-sm font-medium transition-colors hover:text-primary">Map</a>
-              </Link>
-              <Link href="/admin/mange-complani">
-                <a className="text-sm font-medium transition-colors hover:text-primary">Mange Complani</a>
-              </Link>
-            </>
+            <Link href="/map">
+              <a className="text-sm font-medium transition-colors hover:text-primary">Map</a>
+            </Link>
           )}
           <Button variant="ghost" size="icon" className="relative">
             <Bell className="h-5 w-5" />
@@ -75,7 +79,9 @@ export function Header() {
                 </Avatar>
                 <div className="hidden md:block text-sm">
                   <p className="font-medium">{user?.name || "Guest"}</p>
-                  <p className="text-xs text-muted-foreground">{isAuthenticated ? user?.name : "Not logged in"}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {isAuthenticated ? user?.name : "Not logged in"}
+                  </p>
                 </div>
               </div>
             </DropdownMenuTrigger>
@@ -98,6 +104,6 @@ export function Header() {
           </DropdownMenu>
         </nav>
       </div>
- </header> 
+    </header>
   );
 }

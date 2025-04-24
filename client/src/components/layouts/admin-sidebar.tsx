@@ -1,6 +1,6 @@
-
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
+import { useSidebar } from "@/components/ui/sidebar";
 import {
   LayoutDashboard,
   Users,
@@ -17,6 +17,7 @@ import logo from "../../assets/logo.png";
 
 export function AdminSidebar() {
   const [location] = useLocation();
+  const { openMobile, setOpenMobile } = useSidebar();
 
   const navItems = [
     {
@@ -51,7 +52,7 @@ export function AdminSidebar() {
     },
     {
       title: "Manage Complain",
-      href: "/admin/manage-complaint",
+      href: "/admin/mange-complani",
       icon: MessageSquare,
     },
     {
@@ -72,32 +73,66 @@ export function AdminSidebar() {
   ];
 
   return (
-    <aside className="w-64 bg-sidebar border-r min-h-screen">
+    <>
+      {/* Mobile overlay */}
+      {openMobile && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          onClick={() => setOpenMobile(false)}
+        />
+      )}
 
-      <nav className="space-y-1 px-2">
-        {navItems.map((item) => (
-          <Link key={item.href} href={item.href}>
-            <a
-              className={cn(
-                "flex items-center px-3 py-2 text-sm rounded-md",
-                location === item.href
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                  : "text-sidebar-foreground hover:bg-sidebar-accent/50"
-              )}
-            >
-              <item.icon className="h-5 w-5 mr-2" />
-              {item.title}
-            </a>
-          </Link>
-        ))}
-        <Link href="/admin/logout">
-          <a className="flex items-center px-3 py-2 text-sm rounded-md text-red-500 hover:bg-sidebar-accent/50">
-            <LogOut className="h-5 w-5 mr-2" />
-            Sign Out
-          </a>
-        </Link>
-      </nav>
-    </aside>
+      {/* Sidebar */}
+      <aside
+        className={cn(
+"fixed inset-y-0 left-0 z-[100] w-64 border-r bg-background transform transition-transform duration-200 ease-in-out md:relative md:translate-x-0",
+      openMobile ? "translate-x-0" : "-translate-x-full",
+      "block" // Always show the container
+        )}
+      >
+        <div className="flex flex-col h-full">
+          {/* Logo Section */}
+          {/* <div className="p-4 border-b flex items-center gap-2">
+            <img src={logo} alt="SmartCity" className="h-8 w-8" />
+            <span className="text-lg font-semibold">SmartCity Admin</span>
+          </div> */}
+
+          {/* Nav Items */}
+          <nav className="flex-1 space-y-1 p-4">
+            {navItems.map((item) => (
+              <Link key={item.href} href={item.href}>
+                <a
+                  className={cn(
+                    "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all",
+                    location === item.href
+                      ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                      : "text-sidebar-foreground hover:bg-sidebar-accent/50"
+                  )}
+                  onClick={() => setOpenMobile(false)}
+                >
+                  <item.icon
+                    className={cn("h-5 w-5", location === item.href ? "text-sidebar-accent-foreground" : "")}
+                  />
+                  {item.title}
+                </a>
+              </Link>
+            ))}
+
+            {/* Sign Out */}
+            <Link href="/admin/logout">
+              <a
+                className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-red-500 hover:bg-sidebar-accent/50"
+                onClick={() => setOpenMobile(false)}
+              >
+                <LogOut className="h-5 w-5" />
+                Sign Out
+              </a>
+            </Link>
+          </nav>
+        </div>
+      </aside>
+    </>
   );
 }
+
 export default AdminSidebar;
