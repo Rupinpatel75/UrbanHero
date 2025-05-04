@@ -13,7 +13,7 @@ import { fileURLToPath } from "url";
 import { z } from "zod";
 import { authenticateUser, AuthRequest } from "./authMiddleware.ts";
 import bcrypt from "bcrypt";
-import upload from "./uploadConfig";
+import upload from "./uploadConfig.ts";
 
 // Fix for __dirname in ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -164,10 +164,10 @@ app.post("/api/v1/login", async (req: Request, res: Response) => {
       });
     }
 
-    // Compare passwords
-    const isMatch = await bcrypt.compare(data.password, user.password);
+    // Compare passwords using the model method
+    const isMatch = await user.comparePassword(data.password);
     if (!isMatch) {
-      return res.status(400).json({ message: "Invalid credentials // password is not match" });
+      return res.status(400).json({ message: "Invalid email or password" });
     }
 
     // Generate JWT Token
