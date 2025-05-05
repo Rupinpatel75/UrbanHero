@@ -28,13 +28,15 @@ import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { Icon } from "leaflet";
 
+// Fix for default marker icon in react-leaflet
 delete (Icon.Default.prototype as any)._getIconUrl;
 Icon.Default.mergeOptions({
-  iconRetinaUrl: "/marker-icon-2x.png",
-  iconUrl: "/marker-icon.png",
-  shadowUrl: "/marker-shadow.png",
+  iconRetinaUrl: '/marker-icon-2x.png',
+  iconUrl: '/marker-icon.png',
+  shadowUrl: '/marker-shadow.png',
 });
 
+//@ts-ignore
 function LocationMarker({ position, setPosition }) {
   useMapEvents({
     click(e) {
@@ -52,17 +54,21 @@ export default function Report() {
   const [position, setPosition] = useState<[number, number] | null>(null);
 
   const form = useForm({
+    resolver: zodResolver(insertCaseSchema),
     defaultValues: {
       title: "",
       description: "",
       category: "",
       priority: "",
-      location: "",
+      location: "auto", // Add default location value
       latitude: "",
       longitude: "",
+      image: null,
     },
   });
+  
 
+  // Get user's current location
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -78,11 +84,12 @@ export default function Report() {
             description: "Could not get your current location. Please enter manually.",
             variant: "destructive",
           });
-        },
+        }
       );
     }
   }, []);
 
+  // Handle file selection
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -95,15 +102,73 @@ export default function Report() {
     }
   };
 
+  const onSubmit = async (formData: any) => {
+    console.log("Form submitted with data:", formData); // Debug log
+  
+    // Validate required fields
+    if (!formData.title || !formData.description || !formData.category || !formData.priority) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+  
+    // Validate location data
+    if (!formData.latitude || !formData.longitude) {
+      toast({
+        title: "Error",
+        description: "Please select a location on the map",
+        variant: "destructive",
+      });
+      return;
+    }
+  
+    try {
+      const data = new FormData();
+      data.append("title", formData.title);
+      data.append("description", formData.description);
+      data.append("category", formData.category);
+      data.append("priority", formData.priority);
+      data.append("latitude", formData.latitude);
+      data.append("longitude", formData.longitude);
+      data.append("location", formData.location || "auto");
+  
+      if (selectedFile) {
+        data.append("image", selectedFile);
+      }
+  
+      console.log("Submitting data to mutation:", Object.fromEntries(data)); // Debug log
+      await mutation.mutateAsync(data);
+    } catch (error) {
+      console.error("Submission error:", error);
+      toast({
+        title: "Error",
+        description: "Failed to submit report. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+  
+  
   const mutation = useMutation({
     mutationFn: async (data: FormData) => {
+      console.log("Mutation started with data:", Object.fromEntries(data)); // Debug log
+      
       const response = await apiRequest("POST", "/api/v1/cases", data);
+      console.log("API Response:", response); // Debug log
+      
       if (!response.ok) {
-        throw new Error("Failed to submit report");
+        const errorData = await response.json();
+        console.error("API Error:", errorData); // Debug log
+        throw new Error(errorData.message || "Failed to submit report");
       }
+      
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log("Mutation succeeded:", data); // Debug log
       toast({
         title: "Success",
         description: "Your report has been submitted successfully.",
@@ -112,38 +177,28 @@ export default function Report() {
       setSelectedFile(null);
       setFilePreview(null);
     },
-    onError: (error) => {
+    onError: (error: Error) => {
+      console.error("Mutation Error:", error);
       toast({
         title: "Error",
-        description: error.message,
+        description: error.message || "Failed to submit report. Please check all required fields.",
         variant: "destructive",
       });
     },
   });
-
-  const onSubmit = (formData: any) => {
-    const data = new FormData();
-    data.append("title", formData.title);
-    data.append("description", formData.description);
-    data.append("category", formData.category);
-    data.append("priority", formData.priority);
-    data.append("latitude", formData.latitude);
-    data.append("longitude", formData.longitude);
-    data.append("location", formData.location);
-
-    if (selectedFile) {
-      data.append("image", selectedFile);
-    }
-
-    mutation.mutate(data);
-  };
+  
+  
 
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto">
       <Card>
         <CardContent className="p-6">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form 
+              onSubmit={form.handleSubmit(onSubmit)} 
+              className="space-y-6"
+              encType="multipart/form-data" // Add this
+            >
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="space-y-6">
                   <div className="border rounded-lg p-4">

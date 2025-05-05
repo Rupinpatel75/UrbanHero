@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import logo from '../../assets/logo.png';
 import { Button } from "@/components/ui/button";
@@ -11,18 +12,32 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useState } from 'react';
-
+import { navigate } from "wouter/use-browser-location";
 import { useSidebar } from "@/components/ui/sidebar";
 
-
 export function Header() {
-  // This would typically come from your auth context
-  const user = {
-    name: "Admin",
-    image: "/avatar.png", 
-  };
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState<{ name: string; image: string } | null>(null);
   const { setOpenMobile } = useSidebar();
+
+  useEffect(() => {
+    // Check if user is logged in
+    const token = localStorage.getItem("token");
+    const storedUser = localStorage.getItem("user");
+
+    if (token && storedUser) {
+      setIsAuthenticated(true);
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setIsAuthenticated(false);
+    setUser(null);
+    navigate("/login");
+  };
 
   return (
     <header className="border-b">
@@ -37,7 +52,7 @@ export function Header() {
           >
             <Menu className="h-5 w-5" />
           </Button>
-          <Link href="/dashboard">
+          <Link href={isAuthenticated ? "/dashboard" : "/"}>
             <div className="flex items-center gap-2">
               <img src={logo} alt="SmartCity" className="h-10 w-10" />
               <span className="text-xl font-semibold hidden sm:inline-block">SmartCity</span>
@@ -46,15 +61,19 @@ export function Header() {
         </div>
 
         <nav className="flex items-center gap-4">
-          <Link href="/dashboard">
-            <span className="text-sm font-medium transition-colors hover:text-primary">Dashboard</span>
-          </Link>
-          <Link href="/map">
-            <span className="text-sm font-medium transition-colors hover:text-primary">Map</span>
-          </Link>
-          <Link href="/report">
-            <span className="text-sm font-medium transition-colors hover:text-primary">Create a report</span>
-          </Link>
+          {isAuthenticated && (
+            <>
+              <Link href="/dashboard">
+                <span className="text-sm font-medium transition-colors hover:text-primary">Dashboard</span>
+              </Link>
+              <Link href="/map">
+                <span className="text-sm font-medium transition-colors hover:text-primary">Map</span>
+              </Link>
+              <Link href="/report">
+                <span className="text-sm font-medium transition-colors hover:text-primary">Create a report</span>
+              </Link>
+            </>
+          )}
           <Button variant="ghost" size="icon" className="relative">
             <Bell className="h-5 w-5" />
             <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-600"></span>
@@ -63,22 +82,30 @@ export function Header() {
             <DropdownMenuTrigger asChild>
               <div className="flex items-center gap-2 cursor-pointer">
                 <Avatar>
-                  <AvatarImage src={user.image} alt={user.name} />
-                  <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                  <AvatarImage src={user?.image || "/default-avatar.png"} alt={user?.name || "User"} />
+                  <AvatarFallback>{user?.name?.charAt(0) || "U"}</AvatarFallback>
                 </Avatar>
                 <div className="hidden md:block text-sm">
-                  <p className="font-medium">{user.name}</p>
-                  <p className="text-xs text-muted-foreground">{user.name}</p>
+                  <p className="font-medium">{user?.name || "Guest"}</p>
+                  <p className="text-xs text-muted-foreground">{isAuthenticated ? user?.name : "Not logged in"}</p>
                 </div>
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Profile</DropdownMenuItem>
-              <DropdownMenuItem>Settings</DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Log out</DropdownMenuItem>
+              {isAuthenticated ? (
+                <>
+                  <DropdownMenuItem>Profile</DropdownMenuItem>
+                  <DropdownMenuItem>Settings</DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout}>Log out</DropdownMenuItem>
+                </>
+              ) : (
+                <Link href="/login">
+                  <DropdownMenuItem>Log in</DropdownMenuItem>
+                </Link>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </nav>

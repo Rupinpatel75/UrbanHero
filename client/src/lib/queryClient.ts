@@ -14,17 +14,22 @@ export async function apiRequest(
 ): Promise<Response> {
   const token = localStorage.getItem("token"); // Get token from localStorage
 
-  const headers: HeadersInit = {
-    ...(data ? { "Content-Type": "application/json" } : {}), // Add Content-Type if data exists
-    ...(token ? { Authorization: `Bearer ${token}` } : {}), // Add Authorization header if token exists
-  };
+  const headers: HeadersInit = {};
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  // Don't set Content-Type for FormData, let the browser handle it
+  if (!(data instanceof FormData)) {
+    headers["Content-Type"] = "application/json";
+  }
 
   console.log("API Request Headers:", headers); // Debugging step
 
-  const res = await fetch(url, {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}${url}`, {
     method,
     headers,
-    body: data ? JSON.stringify(data) : undefined,
+    body: data instanceof FormData ? data : JSON.stringify(data),
     credentials: "include",
   });
 

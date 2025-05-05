@@ -189,18 +189,41 @@ app.post("/api/v1/login", async (req: Request, res: Response) => {
   }
 });
 
+// First, add a Zod schema for case validation
+const CaseSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  description: z.string().min(1, "Description is required"),
+  category: z.enum(["road", "lighting", "garbage", "other"], {
+    required_error: "Category is required",
+  }),
+  priority: z.enum(["low", "medium", "high"], {
+    required_error: "Priority is required",
+  }),
+  location: z.string().optional(),
+  latitude: z.string().min(1, "Latitude is required"),
+  longitude: z.string().min(1, "Longitude is required"),
+});
 
+// Then update the route handler
 app.post("/api/v1/cases", authenticateUser, upload.single("image"), async (req: AuthRequest, res: Response) => {
   try {
-    console.log(req.body); // Should contain form fields
-    console.log(req.file); // Should contain uploaded file info
+    console.log("Received form data:", req.body);
+    console.log("Received file:", req.file);
 
-    const { title, description, category, priority, location, latitude, longitude } = req.body;
-    const userId = req.user?.userId; // Convert to number
+    // Parse and validate the request body
+    const result = CaseSchema.safeParse(req.body);
+    if (!result.success) {
+      return res.status(400).json({ 
+        message: "Validation failed", 
+        errors: result.error.format() 
+      });
+    }
 
-    // Validate required fields
-    if (!title || !description || !category || !latitude || !longitude) {
-      return res.status(400).json({ message: "All required fields must be provided." });
+    const { title, description, category, priority, location, latitude, longitude } = result.data;
+    const userId = req.user?.userId;
+
+    if (!userId) {
+      return res.status(401).json({ message: "User not authenticated" });
     }
 
     // Create new report
@@ -208,23 +231,33 @@ app.post("/api/v1/cases", authenticateUser, upload.single("image"), async (req: 
       title,
       description,
       category,
-      priority: priority || "low",
-      location: location || "",
+      priority,
+      location: location || "auto",
       latitude,
       longitude,
       imageUrl: req.file ? `/uploads/${req.file.filename}` : "",
       userId,
+      status: "pending", // Add default status
+      createdAt: new Date(),
     });
 
-    console.log("Received userId:", req.body.userId, "Type:", typeof req.body.userId);
     // Save report
     await report.save();
     console.log("Report saved successfully:", report);
 
-    res.status(201).json({ message: "Report created successfully", report });
+    res.status(201).json({ 
+      message: "Report created successfully", 
+      report,
+      success: true 
+    });
+
   } catch (error) {
     console.error("Error creating report:", error);
-    res.status(500).json({ error: "Failed to create report" });
+    res.status(500).json({ 
+      message: "Failed to create report",
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error"
+    });
   }
 });
 
