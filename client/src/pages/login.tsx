@@ -5,7 +5,7 @@ import { Link } from "wouter";
 import { SiGoogle, SiApple, SiFacebook } from "react-icons/si";
 import { useState } from "react";
 import { useLocation } from "wouter";
-
+import axios from 'axios'; //Import axios
 
 
 export default function Login() {
@@ -36,12 +36,18 @@ export default function Login() {
         throw new Error(data.message || "Login failed");
       }
 
-      // Store token in localStorage
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user)); // Store user details
+      const { token, user } = data;
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
 
-      // Redirect to dashboard
-      navigate("/dashboard");
+      // Set authorization header for future requests
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+      if (user.isAdmin) {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/dashboard");
+      }
     } catch (err: any) {
       setError(err.message);
     } finally {

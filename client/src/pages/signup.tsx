@@ -43,8 +43,23 @@ export default function Signup() {
   };
 
 
+  const validateForm = () => {
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters long");
+      return false;
+    }
+    if (!phone.match(/^\d{10}$/)) {
+      setError("Please enter a valid 10-digit phone number");
+      return false;
+    }
+    return true;
+  };
+
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateForm()) {
+      return;
+    }
     setLoading(true);
     setError(null);
 
